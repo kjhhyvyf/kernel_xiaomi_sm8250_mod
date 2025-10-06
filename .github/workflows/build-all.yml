@@ -30,13 +30,17 @@ jobs:
         unzip 20210522.zip
         cd $GITHUB_WORKSPACE
 
-    - name: Build kernel for ${{ matrix.device }} (No KSU)
+    - name: Build kernel for ${{ matrix.device }} (No KSU & NoKPM)
       run: |
         bash build.sh ${{ matrix.device }}
 
-    - name: Build kernel for ${{ matrix.device }} (With KSU)
+    - name: Build kernel for ${{ matrix.device }} (With KSU & NoKPM)
       run: |
         bash build.sh ${{ matrix.device }} ksu
+
+    - name: Build kernel for ${{ matrix.device }} (With KSU & With KPM)
+      run: |
+        bash build.sh ${{ matrix.device }} ksu kpm
 
     - name: Upload zips for ${{ matrix.device }}
       uses: actions/upload-artifact@v4
