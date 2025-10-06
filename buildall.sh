@@ -28,3 +28,17 @@ bash build.sh elish ksu
 bash build.sh enuma ksu
 bash build.sh dagu ksu
 bash build.sh pipa ksu
+
+bash build.sh psyche ksu kpm
+bash build.sh thyme ksu kpm
+bash build.sh umi ksu kpm
+bash build.sh munch ksu kpm
+bash build.sh lmi ksu kpm
+bash build.sh cmi ksu kpm
+bash build.sh cas ksu kpm
+bash build.sh apollo ksu kpm
+bash build.sh alioth ksu kpm
+bash build.sh elish ksu kpm
+bash build.sh enuma ksu kpm
+bash build.sh dagu ksu kpm
+bash build.sh pipa ksu kpm
