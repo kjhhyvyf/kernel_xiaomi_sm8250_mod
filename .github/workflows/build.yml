@@ -6,7 +6,7 @@ on:
       device:
         description: '选择设备代号'
         required: true
-        default: 'lmi'
+        default: 'pipa'
         type: choice
         options:
           - psyche
@@ -25,6 +25,14 @@ on:
         description: '是否包含KSU'
         required: true
         default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      include_kpm:
+        description: '是否包含KPM'
+        required: true
+        default: 'false'
         type: choice
         options:
           - 'true'
@@ -55,11 +63,14 @@ jobs:
 
     - name: Build kernel
       run: |
+        BUILD_ARGS="${{ github.event.inputs.device }}"
         if [ "${{ github.event.inputs.include_ksu }}" = "true" ]; then
-          bash build.sh ${{ github.event.inputs.device }} ksu
-        else
-          bash build.sh ${{ github.event.inputs.device }}
+        BUILD_ARGS="$BUILD_ARGS ksu"
         fi
+        if [ "${{ github.event.inputs.include_kpm }}" = "true" ]; then
+        BUILD_ARGS="$BUILD_ARGS kpm"
+        fi
+        bash build.sh $BUILD_ARGS
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
