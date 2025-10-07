@@ -51,7 +51,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential git curl wget bison flex zip bc cpio libssl-dev ccache python-is-python3 unzip
+        sudo apt install -y build-essential git curl wget bison flex ccache zip bc cpio libssl-dev ccache python-is-python3 unzip
 
     - name: Setup proton-clang toolchain
       run: |
