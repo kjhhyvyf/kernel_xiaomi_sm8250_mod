@@ -20,7 +20,39 @@ static spinlock_t susfs_spin_lock;
 
 extern bool susfs_is_current_ksu_domain(void);
 #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-extern void try_umount(const char *mnt, bool check_mnt, int flags, uid_t uid);
+static void try_umount(const char *mnt, bool check_mnt, int flags, uid_t uid)
+{
+    struct path path;
+    int err;
+    
+    if (!mnt || !*mnt) {
+        SUSFS_LOGE("try_umount: invalid mount path\n");
+        return;
+    }
+    
+    err = kern_path(mnt, LOOKUP_FOLLOW, &path);
+    if (err) {
+        SUSFS_LOGE("try_umount: failed to lookup path '%s', error %d\n", mnt, err);
+        return;
+    }
+    
+    // 检查当前进程是否有权限卸载
+    if (!ns_capable(current->nsproxy->mnt_ns->user_ns, CAP_SYS_ADMIN)) {
+        SUSFS_LOGE("try_umount: no permission to unmount '%s'\n", mnt);
+        path_put(&path);
+        return;
+    }
+    
+    // 执行卸载操作
+    err = do_umount(path.mnt, flags);
+    if (err) {
+        SUSFS_LOGE("try_umount: failed to unmount '%s', error %d\n", mnt, err);
+    } else {
+        SUSFS_LOGI("try_umount: successfully unmounted '%s'\n", mnt);
+    }
+    
+    path_put(&path);
+}
 #endif
 
 #ifdef CONFIG_KSU_SUSFS_ENABLE_LOG
