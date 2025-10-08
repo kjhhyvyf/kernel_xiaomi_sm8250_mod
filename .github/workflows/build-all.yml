@@ -20,7 +20,22 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential git curl wget bison flex zip ccache bc cpio libssl-dev ccache python-is-python3 unzip
+        sudo apt install -y build-essential git curl wget bison flex zip bc cpio libssl-dev ccache python-is-python3 unzip
+
+    # 生成短哈希（修复 substr() 报错）
+    - name: Set short commit SHA
+      id: vars
+      run: echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ccache_mikernel
+        key: ${{ runner.os }}-ccache-${{ github.event.inputs.device }}-${{ github.event.inputs.include_ksu }}-${{ env.SHORT_SHA }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-${{ github.event.inputs.device }}-${{ github.event.inputs.include_ksu }}-
+          ${{ runner.os }}-ccache-${{ github.event.inputs.device }}-
+          ${{ runner.os }}-ccache-
 
     - name: Setup proton-clang toolchain
       run: |
@@ -41,6 +56,9 @@ jobs:
     - name: Build kernel for ${{ matrix.device }} (With KSU & With KPM)
       run: |
         bash build.sh ${{ matrix.device }} ksu kpm
+
+    - name: Show ccache stats
+      run: ccache -s
 
     - name: Upload zips for ${{ matrix.device }}
       uses: actions/upload-artifact@v4
